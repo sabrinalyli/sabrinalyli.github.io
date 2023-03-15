@@ -11,6 +11,9 @@ echo: false #This hides the computational steps in our document
 execute:
   warning: false
   message: false
+project:
+  type: website
+  output-dir: docs
 ---
 
 ------------------------------------------------------------------------
@@ -235,7 +238,7 @@ ggplot() +
   scale_color_manual(values=c("#E56D00","#3399FF"))
 ```
 
-Let's now format our map a bit by adding a **north arrow**, **scale bar**, and remove the grid from our map. We will be using the *ggspatial* package to do this. Click **Zoom** above the figure to see the map with updated formatting. 
+Let's now format our map a bit by adding a **north arrow**, **scale bar**, and remove the grid from our map. We will be using the *ggspatial* package to do this. Click **Zoom** above the figure to see the map with updated formatting.
 
 ```{r}
 #| echo: true
@@ -260,7 +263,7 @@ ggplot() +
   theme_void()
 ```
 
-Since samples were taken in both 2017 and 2018, let's visualise this again by year. Here we are adding a new line "**facet_wrap(~year)**" into our ggplot code. This line will create a map for 2017 and 2018. 
+Since samples were taken in both 2017 and 2018, let's visualise this again by year. Here we are adding a new line "**facet_wrap(\~year)**" into our ggplot code. This line will create a map for 2017 and 2018.
 
 ```{r}
 #| echo: true
@@ -296,4 +299,4 @@ ggplot() +
 
 ##Next steps
 
-Can you think of ways that we can improve our map? 
+Can you think of ways that we can improve our map?
