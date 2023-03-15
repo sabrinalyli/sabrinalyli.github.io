@@ -1,7 +1,7 @@
 ---
 title: "Mosquitoes and monkeys: Mapping cases to investigate yellow fever virus emergence "
 description: "2nd CADDE Workshop on Portable Metagenomics for Pathogen Surveillance, Sao Paulo 13-17 March 2022"
-author: "Dr. Sabrina Li"
+author: "Dr. Sabrina Li, University of Nottingham"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 format:
   html:
@@ -20,15 +20,7 @@ project:
 
 ## Introduction
 
-Yellow fever virus is blah blah blah -
-
--Briefly discuss history
-
--Briefly discuss transmission cycle
-
--briefly discuss latest YFV outbreak
-
-This tutorial will teach you how to make maps in RStudio to visualisase
+In this tutorial, we will learn how to create a map showing the spatial distribution of species known to transmit yellow fever virus (YFV) in Horto Florestal in Sao Paulo municipality.
 
 ## Mosquitoes and non-human primates (NHP)
 
@@ -60,7 +52,7 @@ What do you notice?
 
 How much data do we have on mosquitoes and on non-human primates? We can easily determine this by filtering the data to create a bar chart using **ggplot2**.
 
-First, we'll need to load **ggplot2** into our library in RStudio. We will also need to load **tidyverse** as it will provide us functions that can help us filter our data for plotting. If you do not have these packages, you can install them by running, for instance, *install.packages("ggplot2")*, and  *install.packages("tidyverse")* in RStudio.
+First, we'll need to load **ggplot2** into our library in RStudio. We will also need to load **tidyverse** as it will provide us functions that can help us filter our data for plotting. If you do not have these packages, you can install them by running, for instance, *install.packages("ggplot2")*, and *install.packages("tidyverse")* in RStudio.
 
 ```{r}
 #| echo: true
@@ -69,11 +61,11 @@ library(ggplot2)
 library(tidyverse)
 ```
 
-To create a bar chart, we need to determine the total number of observations per species and host type. We then plot this number by host type and species type. This takes a few steps, as shown in the code below. 
+To create a bar chart, we need to determine the total number of observations per species and host type. We then plot this number by host type and species type. This takes a few steps, as shown in the code below.
 
 You will notice that each step ends with **%** - this is a pipe from the *tidyverse* package that tells us the sequence of steps we are taking.
 
-Try the code below in RStudio to produce the bar chart. Notice I've made comments about each step in our code using *#* symbol. This allows us to make notes that do not impact the analysis. 
+Try the code below in RStudio to produce the bar chart. Notice I've made comments about each step in our code using *\#* symbol. This allows us to make notes that do not impact the analysis.
 
 ```{r}
 #| label: fig-barchart
@@ -95,7 +87,7 @@ horto %>%
 
 We can see that we have one species of mosquitoes, *Haemagogus leucocelaenus*, and one species of NHP, *Alouatta*.
 
-Let's now map these cases to understand its spatial distribution in Horto. Have a look again at the dataframe - what information here would be useful for mapping? 
+Let's now map these cases to understand its spatial distribution in Horto. Have a look again at the dataframe - what information here would be useful for mapping?
 
 ## Mapping basics
 
@@ -113,19 +105,23 @@ If we want to map a data set, we will need to look for location-related informat
 
 -   Longitude: part of the coordinate system (X-axis), exact location east or west of prime meridian at Greenwich.
 
-Let's now create a map showing Sao Paulo municipality, where Horto Florestal is located. 
+Let's now create a map showing Sao Paulo municipality, where Horto Florestal is located.
 
-- The package *sf* and *ggspatial* offers spatial feature handling and mapping capabilities.
+-   The package *sf* and *ggspatial* offers spatial feature handling and mapping capabilities.
 
-- *geobr* offers maps of Brazil containing vector data on location, shape, and geographical attributes at various administrative levels. 
+-   *geobr* offers maps of Brazil containing vector data on location, shape, and geographical attributes at various administrative levels.
 
-- In this tutorial we will be extracting municipalities, conservation areas, and census tracts, all using *geobr*.
+-   In this tutorial we will be extracting municipalities, conservation areas, and census tracts, all using *geobr*.
 
-Let's start with installing packages for *geobr*, *sf*, and *ggspatial*, then loading the libraries into R. You can do this using the function *install.packages(" ") - give this a go yourself :) 
+Let's start with installing packages for *geobr*, *sf*, and *ggspatial*, then loading the libraries into R. You can do this using the function \*install.packages(" ") - give this a go yourself :)
 
 ```{r}
-#| label: load-packages
-#| echo: true
+#| label: map-sp
+#| fig-cap: "Map of Sao Paulo municipality"
+#| fig-width: 6
+#| fig-height: 3.5
+#| echo: true 
+#| output: true
 library(geobr)
 library(sf)
 library(ggspatial)
@@ -148,14 +144,19 @@ head(sp_muni)
 
 # Create a map showing Sao Paulo municipality
 ggplot() + 
-  geom_sf(data = sp_muni, fill = "#008A60", colour="#FEBF57", size=2,show.legend = FALSE) +
-  labs(subtitle = "Greater metropolitan area of Sao Paulo", size=8)
+  geom_sf(data = sp_muni, fill = "#008A60", colour="#FEBF57", size=2,show.legend = FALSE) 
 ```
 
 Let's highlight the Horto Florestal area on the map. Because Horto Florestal is a conservation area, we can use **geobr** to extract the shapefile of the park from the function *read_conservation_units()*. The park attached to Horto is "PARQUE ESTADUAL ALBERTO LöFGREN".
 
 ```{r}
-#| echo: true
+#| label: map-horto
+#| fig-cap: "Map of Sao Paulo municipality including the highlighted area of Horto Florestal"
+#| fig-width: 6
+#| fig-height: 3.5
+#| echo: true 
+#| output: true
+
 # Using geobr, import mapping feature details on all main conservation areas in Brazil
 cons_areas <- read_conservation_units(showProgress = FALSE)
 
@@ -169,10 +170,16 @@ ggplot() +
   geom_sf(data = horto_shp, fill = "#FEBF57", colour="#FEBF57", show.legend = FALSE)
 ```
 
-Now let's create a zoomed in version of our map showing Horto and its surrounding neighbourhoods. We will represent neighbourhoods at the census tracts administrative level using the data from *geobr*. 
+Now let's create a zoomed in version of our map showing Horto and its surrounding neighbourhoods. We will represent neighbourhoods at the census tracts administrative level using the data from *geobr*.
 
 ```{r}
+#| label: map-horto-area
+#| fig-cap: "Map of Horto Florestal area in Sao Paulo"
+#| fig-width: 6
+#| fig-height: 3.5
 #| echo: true 
+#| output: true
+
 # Using geobr, import census tracts for Sao Paulo municipality 
 census_tracts  <- read_census_tract(code_tract = 3550308, year = 2020, showProgress = FALSE)
 
@@ -188,9 +195,15 @@ ggplot() +
 
 ## Mapping samples collected from Horto Florestal
 
-Let's now create a map of Horto showing the locations of the *Haemagogus* samples from our *Horto* data set. First, we'll need to convert our data,  the dataframe, to a spatial feature for mapping. Then, we will run some *sf* functions to ensure our data can be mapped. We then use the *subset()* function to extract data on Haemagogus only. Lastly We plot the sample locations in Horto and its surrounding neighbouring areas. 
-```{r collapse=TRUE}
-#| echo: true
+Let's now create a map of Horto showing the locations of the *Haemagogus* samples from our *Horto* data set. First, we'll need to convert our data, the dataframe, to a spatial feature for mapping. Then, we will run some *sf* functions to ensure our data can be mapped. We then use the *subset()* function to extract data on Haemagogus only. Lastly We plot the sample locations in Horto and its surrounding neighbouring areas.
+
+```{r}
+#| label: fig-hg
+#| fig-cap: "Hagmagogus sampling locations in Horto Florestal"
+#| fig-width: 6
+#| fig-height: 3.5
+#| echo: true 
+#| output: true
 
 # Convert data frame to a spatial feature
 horto_data <- st_as_sf(horto, coords = c("longitude","latitude")) 
@@ -211,13 +224,21 @@ ggplot() +
   geom_point (data = horto_hg, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
   scale_color_manual(values=c("#3399FF")) 
 ```
-Only 9 samples were collected. What can you infer about sampling based on its spatial distribution? We can see that some samples are collected in the same location. 
 
-Can you revise the code above and create one for *Alouatta*? You will need to use the *subset* function to create a new data set for *Alouatta* only by extracting the data from *horto_lat_long*. 
+Only 9 samples were collected. What can you infer about sampling based on its spatial distribution? We can see that some samples are collected in the same location.
+
+Can you revise the code above and create one for *Alouatta*? You will need to use the *subset* function to create a new data set for *Alouatta* only by extracting the data from *horto_lat_long*.
 
 Below are some hints...
 
 ```{r}
+#| label: map-alo
+#| fig-cap: "Alouatta sampling locations in Horto Florestal"
+#| fig-width: 6
+#| fig-height: 3.5
+#| echo: true 
+#| output: true
+
 # Extract data on Alouatta only
 horto_alo <- subset(horto_lat_long, Host_species == "Alouatta guariba clamitans")
 
@@ -228,17 +249,12 @@ ggplot() +
   geom_point (data = horto_alo, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
   scale_color_manual(values=c("#E56D00")) 
 ```
+
 41 samples were collected for Alouatta. What can you infer about the spatial distribution of sampling? We can see that samples were taken within and at the borders of Horto Florestal.
 
 Let's now create a map showing both host species.
-```{r}
-#| label: fig-mapstatic
-#| fig-cap: "Map showing spatial distribution of samples by host"
-#| fig-width: 6
-#| fig-height: 3.5
-#| echo: true 
-#| output: true
 
+```{r}
 # Map showing Haemagogus (blue) and Alouatta (orange) sample locations
 ggplot() + 
  geom_sf(data = cts_crop, aes(geometry = geom), fill = "#ede9dd", colour = "#238B45", show.legend = FALSE) +
@@ -246,9 +262,17 @@ ggplot() +
   geom_point (data = horto_lat_long, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
   scale_color_manual(values=c("#E56D00","#3399FF"))
 ```
+
 Let's now format our map a bit by adding a **north arrow**, **scale bar**, and remove the grid from our map. We will be using the *ggspatial* package to do this. Click **Zoom** above the figure in RStudio to see the map with updated formatting.
+
 ```{r}
-#| echo: true
+#| label: map-species
+#| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal"
+#| fig-width: 6
+#| fig-height: 3.5
+#| echo: true 
+#| output: true
+
 ggplot() + 
  geom_sf(data = cts_crop, aes(geometry = geom), fill = "#ede9dd", colour = "#238B45", show.legend = FALSE) +
     geom_sf(data = horto_shp, fill = "#FEBF57", colour="#FEBF57", show.legend = FALSE) + 
@@ -275,12 +299,18 @@ ggplot() +
 
 Since samples were taken in both 2017 and 2018, let's visualise this again by year.
 
-We will need to using the package *lubridate* to extract year information from our data. First, ensure this package is installed and loaded in RStudio. 
+We will need to using the package *lubridate* to extract year information from our data. First, ensure this package is installed and loaded in RStudio.
 
 Here we are adding a new line "**facet_wrap(\~year)**" into our ggplot code. This line will create a map for 2017 and 2018.
 
 ```{r}
-#| echo: true
+#| label: map-species-time
+#| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal in 2017-2018"
+#| fig-width: 6
+#| fig-height: 3.5
+#| echo: true 
+#| output: true
+
 library(lubridate)
 
 #convert date in our data column to a date format recognizable by R
@@ -311,6 +341,12 @@ ggplot() +
   theme_void()
 ```
 
-##Next steps
+## Next steps
 
 Can you think of ways that we can improve our map?
+
+-   **Environmental data**: We can overlay environmental data such as temperature, precipitation, and relative humidity to approximate potential habitat locations of *Haemagogus* and *Alouatta*. When mapping, these data sets come in the form of rasters.
+
+    ![Rasters data showing environmental conditions](env-cov.PNG)
+
+-   Seasonal information:
