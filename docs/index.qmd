@@ -59,7 +59,7 @@ First, we'll need to load **ggplot2** into our library in RStudio. We will also 
 #| echo: true
 #| output: false
 library(ggplot2)
-library(tidyverse)
+library(dplyr)
 ```
 
 To create a bar chart, we need to determine the total number of observations per species and host type. We then plot this number by host type and species type. This takes a few steps, as shown in the code below.
