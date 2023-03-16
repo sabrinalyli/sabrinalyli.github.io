@@ -116,13 +116,12 @@ Let's now create a map showing Sao Paulo municipality, where Horto Florestal is 
 
 Let's start with installing packages for *geobr*, *sf*, and *ggspatial*, then loading the libraries into R. You can do this using the function \*install.packages(" ") - give this a go yourself :)
 
-```{r}
-#| label: map-sp
+```{r collapse = TRUE}
+#| label: fig-map-sp
 #| fig-cap: "Map of Sao Paulo municipality"
 #| fig-width: 6
 #| fig-height: 3.5
 #| echo: true 
-#| output: true
 library(geobr)
 library(sf)
 library(ggspatial)
@@ -151,7 +150,7 @@ ggplot() +
 Let's highlight the Horto Florestal area on the map. Because Horto Florestal is a conservation area, we can use **geobr** to extract the shapefile of the park from the function *read_conservation_units()*. The park attached to Horto is "PARQUE ESTADUAL ALBERTO LöFGREN".
 
 ```{r}
-#| label: map-horto
+#| label: fig-map-horto
 #| fig-cap: "Map of Sao Paulo municipality including the highlighted area of Horto Florestal"
 #| fig-width: 6
 #| fig-height: 3.5
@@ -174,7 +173,7 @@ ggplot() +
 Now let's create a zoomed in version of our map showing Horto and its surrounding neighbourhoods. We will represent neighbourhoods at the census tracts administrative level using the data from *geobr*.
 
 ```{r}
-#| label: map-horto-area
+#| label: fig-map-horto-area
 #| fig-cap: "Map of Horto Florestal area in Sao Paulo"
 #| fig-width: 6
 #| fig-height: 3.5
@@ -233,7 +232,7 @@ Can you revise the code above and create one for *Alouatta*? You will need to us
 Below are some hints...
 
 ```{r}
-#| label: map-alo
+#| label: fig-map-alo
 #| fig-cap: "Alouatta sampling locations in Horto Florestal"
 #| fig-width: 6
 #| fig-height: 3.5
@@ -254,6 +253,8 @@ ggplot() +
 
 Let's now create a map showing both host species.
 ```{r}
+#| fig-width: 6
+#| fig-height: 3.5
 # Map showing Haemagogus (blue) and Alouatta (orange) sample locations
 ggplot() + 
  geom_sf(data = cts_crop, aes(geometry = geom), fill = "#ede9dd", colour = "#238B45", show.legend = FALSE) +
@@ -263,7 +264,7 @@ ggplot() +
 ```
 Let's now format our map a bit by adding a **north arrow**, **scale bar**, and remove the grid from our map. We will be using the *ggspatial* package to do this. Click **Zoom** above the figure in RStudio to see the map with updated formatting.
 ```{r}
-#| label: map-species
+#| label: fig-map-species
 #| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal"
 #| fig-width: 6
 #| fig-height: 3.5
@@ -276,12 +277,11 @@ ggplot() +
   geom_point (data = horto_lat_long, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 1) +
   scale_color_manual(values=c("#E56D00","#3399FF")) +
   # Add scalebar
-  annotation_scale(location = "bl",
-                   pad_x = unit(0.75, "cm")) + 
+  annotation_scale(location = "bl", pad_y = unit(-0.005, "cm")) + 
   # Add north arrow
   annotation_north_arrow(location = "tr", which_north = "true",
-                         pad_x = unit(1, "cm"),
-                         pad_y = unit(1, "cm"),
+                         pad_x = unit(0.5, "cm"),
+                         pad_y = unit(0.5, "cm"),
                          height = unit(0.75, "cm"),
                          width = unit(0.5, "cm")) + 
   # Reformat the map 
@@ -301,7 +301,7 @@ We will need to using the package *lubridate* to extract year information from o
 Here we are adding a new line "**facet_wrap(\~year)**" into our ggplot code. This line will create a map for 2017 and 2018.
 
 ```{r}
-#| label: map-species-time
+#| label: fig-map-species-time
 #| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal in 2017-2018"
 #| fig-width: 6
 #| fig-height: 3.5
@@ -323,10 +323,10 @@ ggplot() +
   scale_color_manual(values=c("#E56D00","#3399FF")) +
   facet_wrap(~year) + 
   annotation_scale(location = "bl",
-                   pad_x = unit(0.75, "cm")) + # add scale
+                   pad_y = unit(-0.5, "cm")) + # add scale
   annotation_north_arrow(location = "tr", which_north = "true",
-                         pad_x = unit(1, "cm"),
-                         pad_y = unit(1, "cm"),
+                         pad_x = unit(0.5, "cm"),
+                         pad_y = unit(0.5, "cm"),
                          height = unit(0.75, "cm"),
                          width = unit(0.5, "cm")) + 
   theme(legend.position="bottom", 
