@@ -303,8 +303,8 @@ Here we are adding a new line "**facet_wrap(\~year)**" into our ggplot code. Thi
 ```{r}
 #| label: fig-map-species-time
 #| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal in 2017-2018"
-#| fig-width: 6
-#| fig-height: 3.5
+#| fig-width: 8
+#| fig-height: 5.5
 #| echo: true 
 #| output: true
 
@@ -323,7 +323,7 @@ ggplot() +
   scale_color_manual(values=c("#E56D00","#3399FF")) +
   facet_wrap(~year) + 
   annotation_scale(location = "bl",
-                   pad_y = unit(-0.5, "cm")) + # add scale
+                   pad_y = unit(-0.01, "cm")) + # add scale
   annotation_north_arrow(location = "tr", which_north = "true",
                          pad_x = unit(0.5, "cm"),
                          pad_y = unit(0.5, "cm"),
