@@ -23,6 +23,7 @@ project:
 In this tutorial, we will learn how to create a map showing the spatial distribution of species known to transmit yellow fever virus (YFV) in Horto Florestal in Sao Paulo municipality.
 
 ## Mosquitoes and non-human primates (NHP)
+We know that YFV in Brazil is transmitted by *Haemagogus* mosquitoes and maintained by non-human primates which can transmit the virus amongst themselves. 
 
 Let's load *Horto_MO_NHP.csv* into RStudio. This file contains data on confirmed cases of yellow fever virus extracted from mosquitoes and non-human primates sampled in Horto, a neighbourhood in Sao Paulo, and elsewhere. Samples were collected between 2017 and 2018.
 
@@ -199,7 +200,7 @@ Let's now create a map of Horto showing the locations of the *Haemagogus* sample
 
 ```{r}
 #| label: fig-hg
-#| fig-cap: "Hagmagogus sampling locations in Horto Florestal"
+#| fig-cap: "Haemagogus sampling locations in Horto Florestal"
 #| fig-width: 6
 #| fig-height: 3.5
 #| echo: true 
@@ -249,11 +250,9 @@ ggplot() +
   geom_point (data = horto_alo, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
   scale_color_manual(values=c("#E56D00")) 
 ```
-
 41 samples were collected for Alouatta. What can you infer about the spatial distribution of sampling? We can see that samples were taken within and at the borders of Horto Florestal.
 
 Let's now create a map showing both host species.
-
 ```{r}
 # Map showing Haemagogus (blue) and Alouatta (orange) sample locations
 ggplot() + 
@@ -262,9 +261,7 @@ ggplot() +
   geom_point (data = horto_lat_long, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
   scale_color_manual(values=c("#E56D00","#3399FF"))
 ```
-
 Let's now format our map a bit by adding a **north arrow**, **scale bar**, and remove the grid from our map. We will be using the *ggspatial* package to do this. Click **Zoom** above the figure in RStudio to see the map with updated formatting.
-
 ```{r}
 #| label: map-species
 #| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal"
@@ -345,8 +342,14 @@ ggplot() +
 
 Can you think of ways that we can improve our map?
 
--   **Environmental data**: We can overlay environmental data such as temperature, precipitation, and relative humidity to approximate potential habitat locations of *Haemagogus* and *Alouatta*. When mapping, these data sets come in the form of rasters.
+- **Environmental data**: Environment and climate change plays a role in determining when and where mosquitoes may breed, reside, and feed. We can overlay environmental data such as temperature, precipitation, relative humidity, and elevation, to approximate potential habitat locations of *Haemagogus*. These factors strongly influence the habitats and occurrence of mosquitoes. When mapping, these data sets come in the form of rasters.
 
     ![Rasters data showing environmental conditions](env-cov.PNG)
 
--   Seasonal information:
+- **Non-human primate reservoirs**: Knowing where non-human primates reside and their movement patterns will enable us to gauge potential reservoir locations. Overlaying this information with mosquito occurrence and NHP observations will allow us to better predict where YFV may emerge. 
+
+- **Geospatial modelling**: By integrating spatial information in machine learning models, we can predict the environmental suitability of *Haemagogus* (e.g. probability of seeing mosquito occurrence) across Brazil. 
+
+## Additional Readings 
+
+
