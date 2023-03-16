@@ -293,13 +293,11 @@ ggplot() +
         panel.grid.minor = element_blank()) + 
   theme_void()
 ```
-
 Since samples were taken in both 2017 and 2018, let's visualise this again by year.
 
 We will need to using the package *lubridate* to extract year information from our data. First, ensure this package is installed and loaded in RStudio.
 
 Here we are adding a new line "**facet_wrap(\~year)**" into our ggplot code. This line will create a map for 2017 and 2018.
-
 ```{r}
 #| label: fig-map-species-time
 #| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal in 2017-2018"
@@ -337,7 +335,6 @@ ggplot() +
         panel.grid.minor = element_blank()) + 
   theme_void()
 ```
-
 ## Next steps
 
 Can you think of ways that we can improve our map?
