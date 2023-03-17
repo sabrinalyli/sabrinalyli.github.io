@@ -17,15 +17,14 @@ project:
 ---
 
 ------------------------------------------------------------------------
-
 ## Introduction
 
-In this tutorial, we will learn how to create a map showing the spatial distribution of species known to transmit yellow fever virus (YFV) in Horto Florestal in Sao Paulo municipality.
+In this tutorial, we will learn how to create a map showing the spatial distribution of confirmed cases by species known to transmit yellow fever virus (YFV). We will do this for Horto Florestal in Sao Paulo municipality.
 
 ## Mosquitoes and non-human primates (NHP)
-We know that YFV in Brazil is transmitted by *Haemagogus* mosquitoes and maintained by non-human primates which can transmit the virus amongst themselves. 
+We know that YFV in Brazil is transmitted by *Haemagogus* mosquitoes and maintained by non-human primates (NHPs) which can transmit and act as reservoirs for the virus. 
 
-Let's load *Horto_MO_NHP.csv* into RStudio. This file contains data on confirmed cases of yellow fever virus extracted from mosquitoes and non-human primates sampled in Horto, a neighbourhood in Sao Paulo, and elsewhere. Samples were collected between 2017 and 2018.
+Let's start by loading *Horto_MO_NHP.csv* into RStudio. This file contains data on confirmed cases of YFV extracted from mosquitoes and NHPs sampled in Horto, a neighbourhood in Sao Paulo, and elsewhere. Samples were collected between 2017 and 2018.
 
 ```{r}
 #| echo: true #show computation
@@ -53,7 +52,7 @@ What do you notice?
 
 How much data do we have on mosquitoes and on non-human primates? We can easily determine this by filtering the data to create a bar chart using **ggplot2**.
 
-First, we'll need to load **ggplot2** into our library in RStudio. We will also need to load **tidyverse** as it will provide us functions that can help us filter our data for plotting. If you do not have these packages, you can install them by running, for instance, *install.packages("ggplot2")*, and *install.packages("tidyverse")* in RStudio.
+First, we'll need to load **ggplot2** into our library in RStudio. We will also need to load **dplyr** as it will provide us functions that can help us filter our data for plotting. If you do not have these packages, you can install them by running, for instance, *install.packages("ggplot2")*, and *install.packages("dplyr")* in RStudio.
 
 ```{r}
 #| echo: true
@@ -62,15 +61,15 @@ library(ggplot2)
 library(dplyr)
 ```
 
-To create a bar chart, we need to determine the total number of observations per species and host type. We then plot this number by host type and species type. This takes a few steps, as shown in the code below.
+To create a bar chart, we need to determine the total number of cases per species and host type. We then plot this number by host type and species type. This takes a few steps, as shown in the code below.
 
 You will notice that each step ends with **%** - this is a pipe from the *tidyverse* package that tells us the sequence of steps we are taking.
 
-Try the code below in RStudio to produce the bar chart. Notice I've made comments about each step in our code using *\#* symbol. This allows us to make notes that do not impact the analysis.
+Try the code below in RStudio to produce the bar chart. Notice I've made comments about each step in our code using *\#* symbol. This allows us to make notes about each step of the analysis. 
 
 ```{r}
 #| label: fig-barchart
-#| fig-cap: "Bar chart showing distribution of species by host type. "
+#| fig-cap: "Bar chart showing distribution of cases by species and host type. "
 #| fig-width: 6
 #| fig-height: 3.5
 #| echo: true 
@@ -79,20 +78,20 @@ horto %>%
   # Determine the count of species for mosquitoes and non-human primates
   group_by(Accession_Number,Host_species) %>%
   summarise(count=n()) %>%
-  # Reorder the data in ascending order. 
+  # Reorder the data in ascending order
   mutate(Accession_Number = reorder(Accession_Number,count, increasing = T)) %>%
-  # Create a bar chart using ggplot.
+  # Create a bar chart using ggplot
   ggplot(aes(x = Accession_Number, count, fill = Host_species)) +
   geom_col(position = "dodge")
 ```
 
-We can see that we have one species of mosquitoes, *Haemagogus leucocelaenus*, and one species of NHP, *Alouatta*.
+We can see that among confirmed YFV cases, we have one species of mosquitoes, *Haemagogus leucocelaenus*, and one species of NHP, *Alouatta*.
 
 Let's now map these cases to understand its spatial distribution in Horto. Have a look again at the dataframe - what information here would be useful for mapping?
 
 ## Mapping basics
 
-If we want to map a data set, we will need to look for location-related information. There are five columns in our data frame that tells us information about the location of the data set.
+When mapping data, we will need to look for location-related information. There are five columns in our data frame that tells us information about the location of the data set.
 
 -   Country
 
@@ -147,7 +146,7 @@ ggplot() +
   geom_sf(data = sp_muni, fill = "#008A60", colour="#FEBF57", size=2,show.legend = FALSE) 
 ```
 
-Let's highlight the Horto Florestal area on the map. Because Horto Florestal is a conservation area, we can use **geobr** to extract the shapefile of the park from the function *read_conservation_units()*. The park attached to Horto is "PARQUE ESTADUAL ALBERTO LöFGREN".
+Let's highlight the Horto Florestal area on the map. Because Horto Florestal is a conservation area, we can use **geobr** to extract the shapefile of the park from the function *read_conservation_units()*. We will use the official park name which is "PARQUE ESTADUAL ALBERTO LöFGREN".
 
 ```{r}
 #| label: fig-map-horto
@@ -170,7 +169,7 @@ ggplot() +
   geom_sf(data = horto_shp, fill = "#FEBF57", colour="#FEBF57", show.legend = FALSE)
 ```
 
-Now let's create a zoomed in version of our map showing Horto and its surrounding neighbourhoods. We will represent neighbourhoods at the census tracts administrative level using the data from *geobr*.
+Now let's create a zoomed in version of our map showing Horto and its surrounding neighbourhoods. We will represent its nearby neighbourhoods at the census tracts administrative level using the data from *geobr*.
 
 ```{r}
 #| label: fig-map-horto-area
@@ -195,11 +194,11 @@ ggplot() +
 
 ## Mapping samples collected from Horto Florestal
 
-Let's now create a map of Horto showing the locations of the *Haemagogus* samples from our *Horto* data set. First, we'll need to convert our data, the dataframe, to a spatial feature for mapping. Then, we will run some *sf* functions to ensure our data can be mapped. We then use the *subset()* function to extract data on Haemagogus only. Lastly We plot the sample locations in Horto and its surrounding neighbouring areas.
+Let's now create a map of Horto showing the locations of confirmed cases from  *Haemagogus* using our *Horto* data set. First, we'll need to convert our data, the data frame, to a spatial feature for mapping. Then, we will run some *sf* functions on our data to ensure our data is in an appropriate format for mapping. We will then use the *subset()* function to extract data on Haemagogus cases only. Finally, we will map those case locations. 
 
 ```{r}
 #| label: fig-hg
-#| fig-cap: "Haemagogus sampling locations in Horto Florestal"
+#| fig-cap: "Confirmed YFV cases from Haemagogus in Horto Florestal"
 #| fig-width: 6
 #| fig-height: 3.5
 #| echo: true 
@@ -221,11 +220,10 @@ horto_hg <- subset(horto_lat_long, Host_species == "Haemagogus leucocelaenus")
 ggplot() + 
  geom_sf(data = cts_crop, aes(geometry = geom), fill = "#ede9dd", colour = "#238B45", show.legend = FALSE) +
     geom_sf(data = horto_shp, fill = "#FEBF57", colour="#FEBF57", show.legend = FALSE) + 
-  geom_point (data = horto_hg, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
+  geom_point (data = horto_hg, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 1) +
   scale_color_manual(values=c("#3399FF")) 
 ```
-
-Only 9 samples were collected. What can you infer about sampling based on its spatial distribution? We can see that some samples are collected in the same location.
+Only 9 cases were confirmed for *Haemagogus*. What can you infer about the cases based on its spatial distribution? We can see that some confirmed cases come from samples collected in the same location. 
 
 Can you revise the code above and create one for *Alouatta*? You will need to use the *subset* function to create a new data set for *Alouatta* only by extracting the data from *horto_lat_long*.
 
@@ -233,7 +231,7 @@ Below are some hints...
 
 ```{r}
 #| label: fig-map-alo
-#| fig-cap: "Alouatta sampling locations in Horto Florestal"
+#| fig-cap: "Confirmed YFV cases from Alouatta in Horto Florestal"
 #| fig-width: 6
 #| fig-height: 3.5
 #| echo: true 
@@ -246,13 +244,15 @@ horto_alo <- subset(horto_lat_long, Host_species == "Alouatta guariba clamitans"
 ggplot() + 
  geom_sf(data = cts_crop, aes(geometry = geom), fill = "#ede9dd", colour = "#238B45", show.legend = FALSE) +
     geom_sf(data = horto_shp, fill = "#FEBF57", colour="#FEBF57", show.legend = FALSE) + 
-  geom_point (data = horto_alo, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
+  geom_point (data = horto_alo, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 1) +
   scale_color_manual(values=c("#E56D00")) 
 ```
-41 samples were collected for Alouatta. What can you infer about the spatial distribution of sampling? We can see that samples were taken within and at the borders of Horto Florestal.
+There were 41 confirmed cases for *Alouatta*. What can you infer about the spatial distribution of cases? We can see that cases for *Alouatta* were observed within and at the borders of Horto Florestal.
 
 Let's now create a map showing both host species.
 ```{r}
+#| label: fig-map-species1
+#| fig-cap: "Confirmed YFV cases from Haemagogus and Alouatta in Horto Florestal"
 #| fig-width: 6
 #| fig-height: 3.5
 # Map showing Haemagogus (blue) and Alouatta (orange) sample locations
@@ -264,8 +264,8 @@ ggplot() +
 ```
 Let's now format our map a bit by adding a **north arrow**, **scale bar**, and remove the grid from our map. We will be using the *ggspatial* package to do this. Click **Zoom** above the figure in RStudio to see the map with updated formatting.
 ```{r}
-#| label: fig-map-species
-#| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal"
+#| label: fig-map-species2
+#| fig-cap: "Confirmed YFV cases from Haemagogus and Alouatta in Horto Florestal (with all relevant map labels)"
 #| fig-width: 6
 #| fig-height: 3.5
 #| echo: true 
@@ -293,11 +293,11 @@ ggplot() +
         panel.grid.minor = element_blank()) + 
   theme_void()
 ```
-Since samples were taken in both 2017 and 2018, let's visualise this again by year.
+Since confirmed cases were observed in both 2017 and 2018, let's visualise case distribution again by year.
 
-We will need to using the package *lubridate* to extract year information from our data. First, ensure this package is installed and loaded in RStudio.
+We will need to use the package *lubridate* to extract year information from our data. First, ensure this package is installed and loaded in RStudio.
 
-Here we are adding a new line "**facet_wrap(\~year)**" into our ggplot code. This line will create a map for 2017 and 2018.
+Here we are adding a new line "**facet_wrap(\~year)**" into our ggplot code. This line will help create a map for 2017 and 2018.
 ```{r}
 #| label: fig-map-species-time
 #| fig-cap: "Sampling locations of Haegmagogus and Alouatta in Horto Florestal in 2017-2018"
@@ -339,14 +339,16 @@ ggplot() +
 
 Can you think of ways that we can improve our map?
 
-- **Environmental data**: Environment and climate change plays a role in determining when and where mosquitoes may breed, reside, and feed. We can overlay environmental data such as temperature, precipitation, relative humidity, and elevation, to approximate potential habitat locations of *Haemagogus*. These factors strongly influence the habitats and occurrence of mosquitoes. When mapping, these data sets come in the form of rasters.
+- **Environmental data**: Environment and climate change plays a role in determining when and where mosquitoes breed, reside, and feed. We can overlay environmental data such as temperature, precipitation, relative humidity, and elevation, to approximate potential habitat locations of *Haemagogus*. These factors strongly influence the habitats and occurrence of mosquitoes. When mapping, these data sets come in the form of rasters.
 
     ![Rasters data showing environmental conditions](env-cov.PNG)
 
 - **Non-human primate reservoirs**: Knowing where non-human primates reside and their movement patterns will enable us to gauge potential reservoir locations. Overlaying this information with mosquito occurrence and NHP observations will allow us to better predict where YFV may emerge. 
 
-- **Geospatial modelling**: By integrating spatial information in machine learning models, we can predict the environmental suitability of *Haemagogus* (e.g. probability of seeing mosquito occurrence) across Brazil. 
+- **Geospatial modelling**: By integrating spatial information in machine learning models (e.g.species distribution modelling), we can predict the environmental suitability of *Haemagogus* (e.g. probability of seeing mosquito occurrence) across Brazil. 
 
 ## Additional Readings 
 
+Li, S. L., Acosta, A. L., Hill, S. C., Brady, O. J., de Almeida, M. A., Cardoso, J. D. C., ... & Messina, J. P. (2022). Mapping environmental suitability of Haemagogus and Sabethes spp. mosquitoes to understand sylvatic transmission risk of yellow fever virus in Brazil. PLoS neglected tropical diseases, 16(1), e0010019. doi:https://doi.org/10.1371/journal.pntd.0010019 
 
+Hill, S. C., Dellicour, S., Claro, I. M., Sequeira, P. C., Adelino, T., Thézé, J., ... & Faria, N. R. (2022). Climate and land-use shape the spread of zoonotic yellow fever virus. medRxiv, 2022-08. doi: https://doi.org/10.1101/2022.08.25.22278983 
