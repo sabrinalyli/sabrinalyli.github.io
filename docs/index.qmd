@@ -259,7 +259,7 @@ Let's now create a map showing both host species.
 ggplot() + 
  geom_sf(data = cts_crop, aes(geometry = geom), fill = "#ede9dd", colour = "#238B45", show.legend = FALSE) +
     geom_sf(data = horto_shp, fill = "#FEBF57", colour="#FEBF57", show.legend = FALSE) + 
-  geom_point (data = horto_lat_long, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 0.05) +
+  geom_point (data = horto_lat_long, aes(x = X, y = Y, colour = Host_species), shape = 1, stroke = 1, size = 1) +
   scale_color_manual(values=c("#E56D00","#3399FF"))
 ```
 Let's now format our map a bit by adding a **north arrow**, **scale bar**, and remove the grid from our map. We will be using the *ggspatial* package to do this. Click **Zoom** above the figure in RStudio to see the map with updated formatting.
